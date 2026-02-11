@@ -1,52 +1,70 @@
-
-import {
-  createArtifactService,
-  getAllArtifactsService,
-} from "../services/artifact.service.js";
+import { createArtifactService, getArtifactsService } from "../services/artifact.service.js";
+import cloudinary from "../config/cloudinary.js";
 
 export const createArtifact = async (req, res) => {
   try {
-    const { title, content, status } = req.body;
-    const author = req.user._id;
+    let mediaUrl = null;
 
-    if (!title || !content) {
-      return res.status(400).json({
-        success: false,
-        message: "Title and content are required",
+    if (req.file) {
+      const result = await cloudinary.uploader.upload_stream(
+        { folder: "artifacts" },
+        async (error, result) => {
+          if (error) {
+            throw new Error("Cloudinary upload failed");
+          }
+
+          const artifact = await createArtifactService({
+            title: req.body.title,
+            content: req.body.content,
+            userId: req.user.id,
+            media: result.secure_url
+          });
+
+          return res.status(201).json({
+            success: true,
+            artifact
+          });
+        }
+      );
+
+      result.end(req.file.buffer);
+    } else {
+      const artifact = await createArtifactService({
+        title: req.body.title,
+        content: req.body.content,
+        userId: req.user.id,
+        media: null
+      });
+
+      return res.status(201).json({
+        success: true,
+        artifact
       });
     }
 
-    const artifact = await createArtifactService({
-      title,
-      content,
-      status, 
-      author,
-    });
-
-    res.status(201).json({
-      success: true,
-      message: "Artifact created successfully",
-      artifact,
-    });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: error.message,
+      message: error.message
     });
   }
 };
 
-export const getAllArtifacts = async (req, res) => {
+export const getArtifacts = async (req, res) => {
   try {
-    const artifacts = await getAllArtifactsService();
+    const artifacts = await getArtifactsService({
+      userId: req.user.id,
+      role: req.user.role
+    });
+
     res.status(200).json({
       success: true,
-      artifacts,
+      artifacts
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: error.message,
+      message: error.message
     });
   }
 };

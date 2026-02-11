@@ -1,4 +1,4 @@
-import Like from "../models/like.js";
+import Like from "../models/likes.js";
 import Artifact from "../models/artifact.js";
 
 export const toggleLikeService = async ({ artifactId, userId }) => {
@@ -29,4 +29,8 @@ export const toggleLikeService = async ({ artifactId, userId }) => {
 export const getLikesService = async (artifactId) => {
   const count = await Like.countDocuments({ artifact: artifactId });
   return { count };
+};
+export const getLikeCountService = async (artifactId) => {
+  const count = await Like.countDocuments({ artifact: artifactId });
+  return count;
 };

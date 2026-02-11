@@ -18,5 +18,4 @@ router.post("/signup/initiate", initiateSignup);
 router.post("/signup/verify", verifySignupOtp);
 router.post("/login", login);
 
-
 export default router;

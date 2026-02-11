@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const likeSchema = new mongoose.Schema(
+const commentSchema = new mongoose.Schema(
   {
     artifact: {
       type: mongoose.Schema.Types.ObjectId,
@@ -11,11 +11,14 @@ const likeSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true
+    },
+    text: {
+      type: String,
+      required: true,
+      trim: true
     }
   },
-  {timestamps: true}
-)
+  { timestamps: true }
+);
 
-likeSchema.index({artifact: 1, user: 1}, {unique: true});
-
-export default mongoose.model("Like", likeSchema)
+export default mongoose.model("Comment", commentSchema);

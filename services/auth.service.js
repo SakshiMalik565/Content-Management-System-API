@@ -103,8 +103,6 @@ export const loginService = async (email, password) => {
     process.env.JWT_SECRET,
     { expiresIn: "1h" }
   );
-  console.log(token);
-  
 
   return {
     token,
